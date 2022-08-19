@@ -40,8 +40,6 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
       newParticipants.push(...remotes);
       sortFunc(newParticipants, room.localParticipant);
       setParticipants(newParticipants);
-
-      console.log(newParticipants[0].getTracks());
     };
     const onSubscribedTrackChanged = (track?: RemoteTrack) => {
       // ordering may have changed, re-sort

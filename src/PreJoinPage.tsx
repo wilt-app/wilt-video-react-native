@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StyleSheet, View, TextInput, Text, Button } from 'react-native';
 import type { RootStackParamList } from './App';
 import { useTheme } from '@react-navigation/native';
+import { AccessToken } from 'livekit-server-sdk';
 
 export const PreJoinPage = ({
   navigation,
@@ -13,8 +14,33 @@ export const PreJoinPage = ({
   const [token, setToken] = useState<string>(
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIiwiY2FuUHVibGlzaCI6dHJ1ZSwiY2FuU3Vic2NyaWJlIjp0cnVlfSwiaWF0IjoxNjYwNTQ3NzEzLCJuYmYiOjE2NjA1NDc3MTMsImV4cCI6MTY2OTE4NzcxMywiaXNzIjoiQVBJWXlIQ2ZrRGNTUGdkIiwic3ViIjoidXNlcjIiLCJqdGkiOiJ1c2VyMiJ9.wVavM23t6XVcqG5gc3_sBI-MKrKQk9o95ovGzEKN6zQ',
   );
+  const [name, setName] = useState<string>(
+    '',
+  );
 
   const { colors } = useTheme();
+  // const connectToRoom = () => {
+  //   try {
+  //     const room = 'room1';
+  //     const roomJoin = true;
+  //     const identity = 'optimus';
+
+  //     const at = new AccessToken(
+  //       'APIYyHCfkDcSPgd',
+  //       '19meEO4UwJ2SBG7eaoOI22r9NzDEt5Unp0neEYlc1TvA',
+  //       {
+  //         identity,
+  //         ttl: '100 days',
+  //       });
+  //     at.addGrant({ roomJoin, room, canPublish: true, canSubscribe: true });
+
+  //     const _token = at.toJwt();
+
+  //     setToken(_token);
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // }
   return (
     <View style={styles.container}>
       {/* <Text style={{ color: colors.text }}>URL</Text>

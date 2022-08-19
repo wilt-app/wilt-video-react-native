@@ -11,6 +11,7 @@ import {
   findNodeHandle,
   NativeModules,
   Text,
+  Button,
 } from 'react-native';
 import type { RootStackParamList } from './App';
 import { useEffect, useState } from 'react';
@@ -29,7 +30,7 @@ export const RoomPage = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'RoomPage'>) => {
   const [, setIsConnected] = useState(false);
-  const [room] = useState<Room>(
+  const [room, setRoom] = useState<Room>(
     () =>
       new Room({
         publishDefaults: { simulcast: true },
@@ -69,6 +70,26 @@ export const RoomPage = ({
   // }, [url, token, room]);
 
   // Setup views.
+
+  const reconnect = () => {
+    setRoom(() =>
+      new Room({
+        publishDefaults: { simulcast: true },
+        adaptiveStream: true,
+        videoCaptureDefaults: { facingMode: 'user' }
+      }))
+    room.connect(url, token, {}).then(r => {
+
+      room.localParticipant.setCameraEnabled(true)
+      // if (!r) {
+      //   console.log('failed to connect to ', url, ' ', token);
+      //   return;
+      // }
+      console.log('connected to ', url, ' ', token);
+      // setIsConnected(true)
+
+    });
+  }
 
   const stageView = participants.length > 0 && (
     <ParticipantView participant={participants[0]} style={styles.stage} />
@@ -111,6 +132,7 @@ export const RoomPage = ({
 
   return (
     <View style={styles.container}>
+      <Button title='Refresh' onPress={reconnect}></Button>
       {stageView}
       {otherParticipantsView}
       <RoomControls
