@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
 import * as React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -14,14 +16,13 @@ import type { RootStackParamList } from './App';
 import { useEffect, useState } from 'react';
 import { RoomControls } from './RoomControls';
 import { ParticipantView } from './ParticipantView';
-import { Participant, Room } from 'livekit-client';
-import { useRoom } from './hooks/useRoom';
+import { Participant, Room, RoomEvent } from 'livekit-client';
+import { sortParticipants, useRoom } from './hooks/useRoom';
 import { useParticipant } from './hooks/useParticipant';
 import type { TrackPublication } from 'livekit-client';
 import { Platform } from 'react-native';
 // @ts-ignore
 import { ScreenCapturePickerView } from 'react-native-webrtc';
-// import { startCallService, stopCallService } from './callservice/CallService';
 
 export const RoomPage = ({
   navigation,
@@ -49,9 +50,11 @@ export const RoomPage = ({
       //   return;
       // }
       console.log('connected to ', url, ' ', token);
-      setIsConnected(true);
+      // setIsConnected(true)
 
     });
+
+
     return () => {
       room.disconnect();
     };
@@ -66,6 +69,7 @@ export const RoomPage = ({
   // }, [url, token, room]);
 
   // Setup views.
+
   const stageView = participants.length > 0 && (
     <ParticipantView participant={participants[0]} style={styles.stage} />
   );

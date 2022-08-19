@@ -24,6 +24,8 @@ export const ParticipantView = ({ style = {}, participant }: Props) => {
   console.log('====================');
   console.log('cameraPublication?.isSubscribed', participant.identity, cameraPublication?.isSubscribed)
   console.log('cameraPublication.isMuted', participant.identity, cameraPublication?.isMuted)
+  console.log('cameraPublication.isMuted_1', participant.identity, cameraPublication?.videoTrack?.mediaStream?.toURL())
+  // console.log('cameraPublication.isMuted_2', participant.identity, cameraPublication?.track?.mediaStreamTrack)
   console.log('====================');
   console.log('====================');
   console.log('====================');
@@ -34,7 +36,7 @@ export const ParticipantView = ({ style = {}, participant }: Props) => {
 
   const { colors } = useTheme();
   var videoView;
-  if (cameraPublication?.isSubscribed && !cameraPublication.isMuted) {
+  if (cameraPublication?.isSubscribed) {
     console.log('HEREEEEEEEEE', participant.identity);
     videoView = (
       <VideoView
@@ -54,6 +56,13 @@ export const ParticipantView = ({ style = {}, participant }: Props) => {
       </View>
     );
   }
+
+  // videoView = (
+  //   <VideoView
+  //     style={styles.videoView}
+  //     videoTrack={cameraPublication?.videoTrack}
+  //   />
+  // );
 
   const displayName = participant.name
     ? participant.name

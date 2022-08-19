@@ -2,12 +2,13 @@ import {
   AudioTrack,
   LocalParticipant,
   Participant,
+  ParticipantEvent,
   RemoteTrack,
   Room,
   RoomEvent,
   Track,
 } from 'livekit-client';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 
 export interface RoomState {
   room?: Room;
@@ -30,12 +31,17 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
   const sortFunc = options?.sortParticipants ?? sortParticipants;
 
   useEffect(() => {
+    const onTrackPublishedChanged = (publication, participant) => {
+      console.log('ON TRACK PUBLISHED');
+    };
     const onParticipantsChanged = () => {
       const remotes = Array.from(room.participants.values());
       const newParticipants: Participant[] = [room.localParticipant];
       newParticipants.push(...remotes);
       sortFunc(newParticipants, room.localParticipant);
       setParticipants(newParticipants);
+
+      console.log(newParticipants[0].getTracks());
     };
     const onSubscribedTrackChanged = (track?: RemoteTrack) => {
       // ordering may have changed, re-sort
@@ -44,8 +50,8 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
         return;
       }
       const tracks: AudioTrack[] = [];
-      room.participants.forEach((p) => {
-        p.audioTracks.forEach((pub) => {
+      room.participants.forEach(p => {
+        p.audioTracks.forEach(pub => {
           if (pub.audioTrack) {
             tracks.push(pub.audioTrack);
           }
@@ -63,7 +69,8 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
         .off(RoomEvent.TrackUnsubscribed, onSubscribedTrackChanged)
         .off(RoomEvent.LocalTrackPublished, onParticipantsChanged)
         .off(RoomEvent.LocalTrackUnpublished, onParticipantsChanged)
-        .off(RoomEvent.AudioPlaybackStatusChanged, onParticipantsChanged);
+        .off(RoomEvent.AudioPlaybackStatusChanged, onParticipantsChanged)
+        .off(RoomEvent.TrackPublished, onTrackPublishedChanged);
     });
     room
       .on(RoomEvent.ParticipantConnected, onParticipantsChanged)
@@ -73,6 +80,7 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
       .on(RoomEvent.TrackUnsubscribed, onSubscribedTrackChanged)
       .on(RoomEvent.LocalTrackPublished, onParticipantsChanged)
       .on(RoomEvent.LocalTrackUnpublished, onParticipantsChanged)
+      .on(RoomEvent.TrackPublished, onTrackPublishedChanged)
       // trigger a state change by re-sorting participants
       .on(RoomEvent.AudioPlaybackStatusChanged, onParticipantsChanged);
 
@@ -100,7 +108,7 @@ export function useRoom(room: Room, options?: RoomOptions): RoomState {
  */
 export function sortParticipants(
   participants: Participant[],
-  localParticipant?: LocalParticipant
+  localParticipant?: LocalParticipant,
 ) {
   participants.sort((a, b) => {
     // loudest speaker first
