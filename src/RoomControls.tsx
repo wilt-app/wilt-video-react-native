@@ -46,12 +46,12 @@ export const RoomControls = ({
         }}>
         <Image style={styles.icon} source={micImage} />
       </Pressable>
-      <Pressable
+      {/* <Pressable
         onPress={() => {
           setCameraEnabled(!cameraEnabled);
         }}>
         <Image style={styles.icon} source={cameraImage} />
-      </Pressable>
+      </Pressable> */}
       {/* <Pressable
         onPress={() => {
           setScreenShareEnabled(!screenShareEnabled);

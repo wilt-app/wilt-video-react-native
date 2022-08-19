@@ -1,46 +1,64 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable prettier/prettier */
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { useState } from 'react';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { StyleSheet, View, TextInput, Text, Button } from 'react-native';
-import type { RootStackParamList } from './App';
 import { useTheme } from '@react-navigation/native';
-import { AccessToken } from 'livekit-server-sdk';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { RootStackParamList } from './App';
+import { getFakeUserToken } from './fake-data';
 
 export const PreJoinPage = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'PreJoinPage'>) => {
   const [url, setUrl] = useState('wss://livekit.appxify.com');
   const [token, setToken] = useState<string>(
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIiwiY2FuUHVibGlzaCI6dHJ1ZSwiY2FuU3Vic2NyaWJlIjp0cnVlfSwiaWF0IjoxNjYwNTQ3NzEzLCJuYmYiOjE2NjA1NDc3MTMsImV4cCI6MTY2OTE4NzcxMywiaXNzIjoiQVBJWXlIQ2ZrRGNTUGdkIiwic3ViIjoidXNlcjIiLCJqdGkiOiJ1c2VyMiJ9.wVavM23t6XVcqG5gc3_sBI-MKrKQk9o95ovGzEKN6zQ',
+    '',
   );
+
   const [name, setName] = useState<string>(
     '',
   );
 
   const { colors } = useTheme();
-  // const connectToRoom = () => {
-  //   try {
-  //     const room = 'room1';
-  //     const roomJoin = true;
-  //     const identity = 'optimus';
+  const connectToRoom = async () => {
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/todos/1', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
 
-  //     const at = new AccessToken(
-  //       'APIYyHCfkDcSPgd',
-  //       '19meEO4UwJ2SBG7eaoOI22r9NzDEt5Unp0neEYlc1TvA',
-  //       {
-  //         identity,
-  //         ttl: '100 days',
-  //       });
-  //     at.addGrant({ roomJoin, room, canPublish: true, canSubscribe: true });
+      const data = await response.json()
 
-  //     const _token = at.toJwt();
+      if (data) {
+        setToken(getFakeUserToken(name))
+      }
 
-  //     setToken(_token);
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // }
+      navigation.push('RoomPage', { url: url, token: token });
+      // const room = 'room1';
+      // const roomJoin = true;
+      // const identity = 'optimus';
+
+      // const at = new AccessToken(
+      //   'APIYyHCfkDcSPgd',
+      //   '19meEO4UwJ2SBG7eaoOI22r9NzDEt5Unp0neEYlc1TvA',
+      //   {
+      //     identity,
+      //     ttl: '100 days',
+      //   });
+      // at.addGrant({ roomJoin, room, canPublish: true, canSubscribe: true });
+
+      // const _token = at.toJwt();
+
+      // setToken(_token);
+    } catch (error) {
+      return null;
+    }
+  }
   return (
     <View style={styles.container}>
       {/* <Text style={{ color: colors.text }}>URL</Text>
@@ -54,22 +72,24 @@ export const PreJoinPage = ({
         value={url}
       /> */}
 
-      <Text style={{ color: colors.text }}>Token</Text>
+      <Text style={{ color: colors.text }}>Enter name</Text>
       <TextInput
         style={{
           color: colors.text,
           borderColor: colors.border,
           ...styles.input,
         }}
-        onChangeText={setToken}
-        value={token}
+        onChangeText={setName}
+        value={name}
       />
 
       <Button
+        disabled={!name}
         title="Connect"
-        onPress={() => {
-          navigation.push('RoomPage', { url: url, token: token });
-        }}
+        // onPress={() => {
+        //   navigation.push('RoomPage', { url: url, token: token });
+        // }}
+        onPress={connectToRoom}
       />
     </View>
   );

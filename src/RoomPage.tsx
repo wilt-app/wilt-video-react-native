@@ -20,10 +20,11 @@ import { ParticipantView } from './ParticipantView';
 import { Participant, Room, RoomEvent } from 'livekit-client';
 import { sortParticipants, useRoom } from './hooks/useRoom';
 import { useParticipant } from './hooks/useParticipant';
-import type { TrackPublication } from 'livekit-client';
+import { TrackPublication } from 'livekit-client';
 import { Platform } from 'react-native';
 // @ts-ignore
 import { ScreenCapturePickerView } from 'react-native-webrtc';
+import InCallManager from 'react-native-incall-manager';
 
 export const RoomPage = ({
   navigation,
@@ -33,6 +34,7 @@ export const RoomPage = ({
   const [room, setRoom] = useState<Room>(
     () =>
       new Room({
+
         publishDefaults: { simulcast: true },
         adaptiveStream: true,
         videoCaptureDefaults: { facingMode: 'user' }
@@ -41,11 +43,15 @@ export const RoomPage = ({
   const { participants } = useRoom(room);
   const { url, token } = route.params;
 
+  InCallManager.setSpeakerphoneOn(true)
+
   // Connect to room.
   useEffect(() => {
     room.connect(url, token, {}).then(r => {
 
-      room.localParticipant.setCameraEnabled(true)
+      // room.localParticipant.setCameraEnabled(true)
+      room.localParticipant.setMicrophoneEnabled(true)
+
       // if (!r) {
       //   console.log('failed to connect to ', url, ' ', token);
       //   return;
@@ -72,23 +78,35 @@ export const RoomPage = ({
   // Setup views.
 
   const reconnect = () => {
-    setRoom(() =>
-      new Room({
-        publishDefaults: { simulcast: true },
-        adaptiveStream: true,
-        videoCaptureDefaults: { facingMode: 'user' }
-      }))
-    room.connect(url, token, {}).then(r => {
+    // room.localParticipant.getTracks().map((trackPub: TrackPublication) => {
+    //   room.localParticipant.unpublishTrack(
+    //     trackPub.track
+    //   )
+    // })
 
-      room.localParticipant.setCameraEnabled(true)
-      // if (!r) {
-      //   console.log('failed to connect to ', url, ' ', token);
-      //   return;
-      // }
-      console.log('connected to ', url, ' ', token);
-      // setIsConnected(true)
+    room.localParticipant.getTracks().map((trackPub: TrackPublication) => {
+      room.localParticipant.publishTrack(
+        trackPub.videoTrack
+      )
+    })
+    // setRoom(() =>
+    //   new Room({
+    //     publishDefaults: { simulcast: true },
+    //     adaptiveStream: true,
+    //     videoCaptureDefaults: { facingMode: 'user' }
+    //   }))
+    // // room.localParticipant
+    // room.connect(url, token, {}).then(r => {
 
-    });
+    //   room.localParticipant.setCameraEnabled(true)
+    //   // if (!r) {
+    //   //   console.log('failed to connect to ', url, ' ', token);
+    //   //   return;
+    //   // }
+    //   console.log('connected to ', url, ' ', token);
+    //   // setIsConnected(true)
+
+    // });
   }
 
   const stageView = participants.length > 0 && (
@@ -132,7 +150,7 @@ export const RoomPage = ({
 
   return (
     <View style={styles.container}>
-      <Button title='Refresh' onPress={reconnect}></Button>
+      {/* <Button title='Refresh' onPress={reconnect}></Button> */}
       {stageView}
       {otherParticipantsView}
       <RoomControls
